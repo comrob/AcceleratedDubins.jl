@@ -14,9 +14,9 @@ Full description is provided in the following [paper](https://dl.acm.org/doi/10.
 ```
 
 ## Instalation
-For Julia, it is necessary to have the `Optim` library installed.
+For Julia, it is necessary to have the `Optim` library installed, which is included in the AcceleratedDubins package.
 
-To use the `example.jl`, The `PyPlot`, `PyCall` Julia libraries and Python library `matplotlib` are required.
+To use the `example/generate-gif.jl`, the `PyPlot`, Julia libraries is required. To use the `tests/runtests.jl`, the `Tests` and `Dubins` libraries are needed.
 
 The package can be installed in Julia by following commands.
 ``` julia
@@ -27,7 +27,7 @@ Pkg.add(PackageSpec(url="https://github.com/comrob/AcceleratedDubins.jl"))
 ## Paths example
 ![Possible paths examples](images/animation.gif)
 
-Shortest is original Dubins. The two other trajectories are proposed paper, where the "fastest" is found using multiple radii samples and the "optimized" uses local optimization.
+Shortest is original Dubins. The two other trajectories are proposed paper, where the "fastest" trajectory is found using multiple radii samples and the "optimized" trajectory uses local optimization (Optim).
 ## Basic usage
 See example/basic.jl
 ```julia
