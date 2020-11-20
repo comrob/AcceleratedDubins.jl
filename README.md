@@ -1,5 +1,7 @@
 # Accelerated Dubins Julia Library
 
+[![Build Status](https://travis-ci.com/comrob/AcceleratedDubins.jl.svg?branch=main)](https://travis-ci.com/comrob/AcceleratedDubins.jl)
+
 This library is used for computing multi-radius Dubins path. The radii of first and last segments can be changed independently, which allows to increase the vehicle's speed. This can decrease total travel time when the turning radii are selected right.
 
 Full description is provided in the following [paper](https://dl.acm.org/doi/10.1145/3341105.3374112).
