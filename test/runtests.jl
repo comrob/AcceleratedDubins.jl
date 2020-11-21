@@ -50,7 +50,7 @@ for run in 1:1
     end
 
     @testset "proposed paths better or equal" begin
-        for testrun in 1:10
+        for testrun in 1:20
             start = [10*rand(), 10*rand(), 2*pi*rand()]
             stop = [10*rand()+10, 10*rand()+5, 2*pi*rand()]
             
@@ -59,14 +59,11 @@ for run in 1:1
 
             path_s, _ = retrieve_path(start, stop, [1., 1.], params) # shortest path
             path_f, _ = fastest_path(start, stop, [1., 2., 3.], params)
-            path_o, _ = optimized_path(start, stop, [1., 3.], params) 
 
             time_s = path_time(path_s, params)
             time_f = path_time(path_f, params)
-            time_o = path_time(path_o, params)
 
             @test time_s >= time_f
-            @test time_s >= time_o
         end
     end
 end
