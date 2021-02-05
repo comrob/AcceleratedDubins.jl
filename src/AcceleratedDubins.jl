@@ -28,7 +28,7 @@ const PATH_ERROR = 1    # path not possible
 The data structure that holds the full dubins path with multiple radii.
 
 # Data fields
-- `origin::Vector{Float64}`: he initial configuration [x, y, a], angle in radians
+- `origin::Vector{Float64}`: the initial configuration [x, y, a], angle in radians
 - `lengths::Vector{Float64}`: lengths of each segment
 - `r::Vector{Float64}`: turn radii of each segment, where radius of straight path is Inf
 - `type::DubinsPathTypeR2`: the Dubins path type given by the @enum DubinsPathTypeR2
@@ -91,7 +91,7 @@ end
 
 
 
-" Compute DubinsR2 path len. Argument: `path::DubinsPathR2, return: `len::Float64`"
+" Compute DubinsR2 path length. Argument: `path::DubinsPathR2, return: `len::Float64`"
 function path_len(path)
     return (path == nothing) ? Inf : sum(path.lengths)
 end
@@ -104,7 +104,7 @@ Comparing function to use between two maneuvres.
 ...
 # Arguments
 - `path_lengths::Vector{Float64}`: vector of segment lengths
-- `radii::Vector{Float64}`: vector of segment radiuses
+- `radii::Vector{Float64}`: vector of segment radii
 - `best_time::Float64`: time to compare with
 - `params::Vector{Float64}`: Vector of speed parameters: [velocity in minimal radius, maximal vehicle velocity, acceleration, deceleration]
 ...
