@@ -523,7 +523,7 @@ function sample_path(path::DubinsPathR2, resolution::Float64 = 0.01)
         push!(confx, B[1])
         push!(confy, B[2])
         ang3 = ang2 + path.lengths[3]/path.r[3]
-        confx2, confy2 = sample_arc(B, ang2, ang3, path.r[3], 0.01, -1)
+        confx2, confy2 = sample_arc(B, ang2, ang3, path.r[3], resolution, -1)
         append!(confx, confx2)
         append!(confy, confy2)
         return confx, confy
