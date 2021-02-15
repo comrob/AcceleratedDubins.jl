@@ -648,42 +648,33 @@ function get_configuration(path::DubinsPathR2, distance::Float64)
         distance = sum(path.lengths)
     end
 
-
     if distance <= path.lengths[1]
         # Requested configuration is in the first segment
         if Integer(path.type) == Integer(LSR) || Integer(path.type) == Integer(LSL)
             ang1 = path.origin[3]-pi/2
             ang2 = ang1 + distance/path.r[1]
             r = path.r[1]
-
             x, y, theta = get_configuration_in_turn(path.origin, ang1, ang2, r, L_SEG)
         else
             ang1 = path.origin[3]+pi/2
             ang2 = ang1 - distance/path.r[1]
             r = path.r[1]
-
             x, y, theta = get_configuration_in_turn(path.origin, ang1, ang2, r, R_SEG)
         end
     elseif distance <= path.lengths[1] + path.lengths[2]
         # Requested conf is in second segment
-        x = nothing
-        y = nothing
-        theta = nothing
+        x = y = theta = nothing
 
         # Find end configuration of first segment
         if Integer(path.type) == Integer(LSR) || Integer(path.type) == Integer(LSL)
             ang1 = path.origin[3]-pi/2
             ang2 = ang1 + path.lengths[1]/path.r[1]
-
             r = path.r[1]
-
             x, y, theta = get_configuration_in_turn(path.origin, ang1, ang2, r, L_SEG)
         else
             ang1 = path.origin[3]+pi/2
             ang2 = ang1 - path.lengths[1]/path.r[1]
-
             r = path.r[1]
-
             x, y, theta = get_configuration_in_turn(path.origin, ang1, ang2, r, R_SEG)
         end
 
@@ -701,13 +692,11 @@ function get_configuration(path::DubinsPathR2, distance::Float64)
             ang1 = path.origin[3]-pi/2
             ang2 = ang1 + path.lengths[1]/path.r[1]
             r = path.r[1]
-
             x, y, theta = get_configuration_in_turn(path.origin, ang1, ang2, r, L_SEG)
         else
             ang1 = path.origin[3]+pi/2
             ang2 = ang1 - path.lengths[1]/path.r[1]
             r = path.r[1]
-
             x, y, theta = get_configuration_in_turn(path.origin, ang1, ang2, r, R_SEG)
         end
 
@@ -720,13 +709,11 @@ function get_configuration(path::DubinsPathR2, distance::Float64)
             ang1 = theta-pi/2
             ang2 = ang1 + distance/path.r[3]
             r = path.r[3]
-
             x, y, theta = get_configuration_in_turn([x, y], ang1, ang2, r, L_SEG)
         else
             ang1 = theta+pi/2
             ang2 = ang1 - distance/path.r[3]
             r = path.r[3]
-
             x, y, theta = get_configuration_in_turn([x, y], ang1, ang2, r, R_SEG)
         end
     end
