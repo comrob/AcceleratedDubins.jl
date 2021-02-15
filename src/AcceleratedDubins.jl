@@ -3,7 +3,7 @@ module AcceleratedDubins
 using Optim
 
 export
-    path_len, path_time, sample_path, speed_by_radius, speed_profile, fastest_path, retrieve_path, optimized_path, possible_tuples, radii_samples_lin, radii_samples_exp
+    path_len, path_time, sample_path, speed_by_radius, speed_profile, fastest_path, retrieve_path, optimized_path, possible_tuples, radii_samples_lin, radii_samples_exp, get_configuration
 
 
 ###############################################################################
@@ -674,7 +674,113 @@ function LSR_path(alfa, beta, dist, radius1, radius2)
     return PATH_OK, out
 end
 
+function get_configuration_in_turn(origin::Vector{Float64}, ang1::Float64, ang2::Float64, r::Float64, type::SegmentType)
+    @assert type == L_SEG || type == R_SEG
 
+    S = (origin[1]-r*cos(ang1), origin[2]-r*sin(ang1))
+    x = S[1] + r * cos(ang2)
+    y = S[2] + r * sin(ang2)
+    theta = nothing
+    if type == L_SEG
+        theta = ang2 + pi/2
+    else
+        theta = ang2 - pi/2
+    end
+    return [x, y, theta]
+end
+
+function get_configuration(path::DubinsPathR2, distance::Float64)
+    # Clip distance at end of the maneuver
+    @assert distance >= 0. "Distance where configuration is queried must be greater than 0.0"
+    if distance > sum(path.lengths)
+        distance = sum(path.lengths)
+    end
+
+
+    if distance <= path.lengths[1]
+        # Requested configuration is in the first segment
+        if Integer(path.type) == Integer(LSR) || Integer(path.type) == Integer(LSL)
+            ang1 = path.origin[3]-pi/2
+            ang2 = ang1 + distance/path.r[1]
+            r = path.r[1]
+
+            x, y, theta = get_configuration_in_turn(path.origin, ang1, ang2, r, L_SEG)
+        else
+            ang1 = path.origin[3]+pi/2
+            ang2 = ang1 - distance/path.r[1]
+            r = path.r[1]
+
+            x, y, theta = get_configuration_in_turn(path.origin, ang1, ang2, r, R_SEG)
+        end
+    elseif distance <= path.lengths[1] + path.lengths[2]
+        # Requested conf is in second segment
+        x = nothing
+        y = nothing
+        theta = nothing
+
+        # Find end configuration of first segment
+        if Integer(path.type) == Integer(LSR) || Integer(path.type) == Integer(LSL)
+            ang1 = path.origin[3]-pi/2
+            ang2 = ang1 + path.lengths[1]/path.r[1]
+
+            r = path.r[1]
+
+            x, y, theta = get_configuration_in_turn(path.origin, ang1, ang2, r, L_SEG)
+        else
+            ang1 = path.origin[3]+pi/2
+            ang2 = ang1 - path.lengths[1]/path.r[1]
+
+            r = path.r[1]
+
+            x, y, theta = get_configuration_in_turn(path.origin, ang1, ang2, r, R_SEG)
+        end
+
+        # Find configuration within the second segment
+        distance -= path.lengths[1]
+        x, y = point_by_angle([x, y], theta, distance)
+    else
+        # Requested configuration is in the third segment
+        x = nothing
+        y = nothing
+        theta = nothing
+
+        # Find end configuration of the first segment
+        if Integer(path.type) == Integer(LSR) || Integer(path.type) == Integer(LSL)
+            ang1 = path.origin[3]-pi/2
+            ang2 = ang1 + path.lengths[1]/path.r[1]
+            r = path.r[1]
+
+            x, y, theta = get_configuration_in_turn(path.origin, ang1, ang2, r, L_SEG)
+        else
+            ang1 = path.origin[3]+pi/2
+            ang2 = ang1 - path.lengths[1]/path.r[1]
+            r = path.r[1]
+
+            x, y, theta = get_configuration_in_turn(path.origin, ang1, ang2, r, R_SEG)
+        end
+
+        # Find end configuration of the second segment
+        x, y = point_by_angle([x, y], theta, path.lengths[2])
+        distance -= (path.lengths[1] + path.lengths[2])
+
+        # Find the configuration within the third segment
+        if Integer(path.type) == Integer(LSL) || Integer(path.type) == Integer(RSL)
+            ang1 = theta-pi/2
+            ang2 = ang1 + distance/path.r[3]
+            r = path.r[3]
+
+            x, y, theta = get_configuration_in_turn([x, y], ang1, ang2, r, L_SEG)
+        else
+            ang1 = theta+pi/2
+            ang2 = ang1 - distance/path.r[3]
+            r = path.r[3]
+
+            x, y, theta = get_configuration_in_turn([x, y], ang1, ang2, r, R_SEG)
+        end
+    end
+
+    return [x, y, theta]
+end 
 
 ###############################################################################
 ###################### SPEED PROFILE FUNCTIONS ################################
