@@ -683,9 +683,7 @@ function get_configuration(path::DubinsPathR2, distance::Float64)
         x, y = point_by_angle([x, y], theta, distance)
     else
         # Requested configuration is in the third segment
-        x = nothing
-        y = nothing
-        theta = nothing
+        x = y = theta= nothing
 
         # Find end configuration of the first segment
         if Integer(path.type) == Integer(LSR) || Integer(path.type) == Integer(LSL)
