@@ -603,6 +603,19 @@ function LSR_path(alfa, beta, dist, radius1, radius2)
     return PATH_OK, out
 end
 
+"""
+    get_configuration_in_turn(origin::Vector{Float64}, ang1::Float64, ang2::Float64, r::Float64, type::SegmentType)
+Get vehicle configuration on a single arc.
+Center of the arc is at coordinates [origin[1]-r*cos(ang1), origin[2]-r*sin(ang1)]
+# Arguments
+- `origin::Vector{Float64}`: vector of starting point: [x, y, _] or [x, y]
+- `ang1::Float64`: starting angle in radians
+- `ang2::Float64`: ending angle in radians
+- `r::Float64`: radius of the arc
+- `type::SegmentType`: wheater the arc is left/right turn
+# Return
+- `ret::Vector{Float64}`: vehicle configuration [x, y, theta]
+"""
 function get_configuration_in_turn(origin::Vector{Float64}, ang1::Float64, ang2::Float64, r::Float64, type::SegmentType)
     @assert type == L_SEG || type == R_SEG
 
@@ -615,9 +628,19 @@ function get_configuration_in_turn(origin::Vector{Float64}, ang1::Float64, ang2:
     else
         theta = ang2 - pi/2
     end
-    return [x, y, theta]
+    ret::Vector{Float64} = [x, y, theta]
+    return ret
 end
 
+"""
+    get_configuration(path::DubinsPathR2, distance::Float64)
+Get vehicle configuration at a given travelled distance
+# Arguments
+- `path::DubinsPathR2`: path on which the configuration is queried
+- `distance::Float64`: distance from start at which the configuration is queried
+# Return
+- `ret::Vector{Float64}`: vehicle configuration [x, y, theta]
+"""
 function get_configuration(path::DubinsPathR2, distance::Float64)
     # Clip distance at end of the maneuver
     @assert distance >= 0. "Distance where configuration is queried must be greater than 0.0"
@@ -708,7 +731,8 @@ function get_configuration(path::DubinsPathR2, distance::Float64)
         end
     end
 
-    return [x, y, theta]
+    ret::Vector{Float64} = [x, y, theta]
+    return ret
 end 
 
 ###############################################################################
