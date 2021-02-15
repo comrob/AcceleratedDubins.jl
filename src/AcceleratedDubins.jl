@@ -3,7 +3,8 @@ module AcceleratedDubins
 using Optim
 
 export
-    path_len, path_time, sample_path, speed_by_radius, speed_profile, fastest_path, retrieve_path, optimized_path, possible_tuples, radii_samples_lin, radii_samples_exp, get_configuration
+    path_len, path_time, sample_path, speed_by_radius, speed_profile, fastest_path, retrieve_path, optimized_path, 
+    possible_tuples, radii_samples_lin, radii_samples_exp, get_configuration
 
 
 ###############################################################################
