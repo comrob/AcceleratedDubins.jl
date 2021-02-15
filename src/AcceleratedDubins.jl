@@ -448,7 +448,7 @@ Sample single path for plotting
 """
 function sample_path(path::DubinsPathR2, resolution::Float64 = 0.01)
     if path == nothing
-        return [], []
+        return Vector{Float64}(), Vector{Float64}()
     else
         confx::Vector{Float64} = []
         confy::Vector{Float64} = []
