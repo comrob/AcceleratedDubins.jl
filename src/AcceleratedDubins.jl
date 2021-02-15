@@ -434,58 +434,6 @@ end
 ###############################################################################
 #################### PATH SAMPLING FOR PLOTTING ###############################
 ###############################################################################
-
-"""
-    sample_arc(start::Vector{Float64}, a1::Float64, a2::Float64, r::Float64, part::Float64, dir::Int)
-Sample single arc: first three arguments similar to TikZ definition
-Center of the arc is at coordinates [start[1] + r*cos(a1+pi), start[2] + r*sin(a1+pi)]
-
-# Arguments
-- `start::Vector{Float64}`: vector of starting point: [x, y, _] or [x, y]
-- `a1::Float64`: starting angle in radians
-- `a2::Float64`: ending angle in radians
-- `r::Float64`: radius of the arc
-- `part::Float64`: how smoothly to sample the arc, smaller -> finer
-- `dir::Int`: direction of the arc, 1 -> clockwise, -1 -> counter-clockwise
-
-# Return
-- `confx::Vector{Float64}`: x points of the path to plot
-- `confy::Vector{Float64}`: y points of the path to plot
-"""
-function sample_arc(start::Vector{Float64}, a1::Float64, a2::Float64, r::Float64, part::Float64, dir::Int)
-    ang1 = mod2pi(a1)
-    ang2 = mod2pi(a2)
-    len = part/(2*pi)
-    S = (start[1]-r*cos(ang1), start[2]-r*sin(ang1))
-    if isapprox(ang1, ang2, atol = 1e-500)
-        x = S[1] + r * cos(ang1)
-        y = S[2] + r * sin(ang1)
-        return [x], [y]
-    end
-
-    confx::Vector{Float64} = []
-    confy::Vector{Float64} = []
-
-    if dir == 1
-        len = - len
-        if ang1 < ang2
-            ang2 -= 2*pi
-        end
-    elseif dir == -1
-        if ang2 < ang1
-            ang2 += 2*pi
-        end
-    end
-    for i in ang1:len:ang2
-        x = S[1] + r * cos(i)
-        y = S[2] + r * sin(i)
-        push!(confx, x)
-        push!(confy, y)
-    end
-
-    return confx, confy
-end
-
 """
     sample_path(path::DubinsPathR2, resolution::Float64 = 0.01)
 Sample single path for plotting
@@ -501,63 +449,43 @@ Sample single path for plotting
 function sample_path(path::DubinsPathR2, resolution::Float64 = 0.01)
     if path == nothing
         return [], []
-    elseif Integer(path.type) == Integer(RSR)
-        ang1 = path.origin[3]+pi/2
-        ang2 = ang1 - path.lengths[1]/path.r[1]
-        confx, confy = sample_arc(path.origin, ang1, ang2, path.r[1], resolution, 1)
-        A = [confx[end], confy[end]]
-        B = point_by_angle(A, ang2-pi/2, path.lengths[2])
-        push!(confx, B[1])
-        push!(confy, B[2])
-        ang3 = ang2 - path.lengths[3]/path.r[3]
-        confx2, confy2 = sample_arc(B, ang2, ang3, path.r[3], resolution, 1)
-        append!(confx, confx2)
-        append!(confy, confy2)
+    else
+        confx::Vector{Float64} = []
+        confy::Vector{Float64} = []
+
+        # Sample first arc
+        for l in 0.:resolution:path.lengths[1]
+            x, y, _ = get_configuration(path, l)
+            push!(confx, x)
+            push!(confy, y)
+        end
+
+        # Add last point of first arch
+        x, y, theta = get_configuration(path, path.lengths[1])
+        push!(confx, x)
+        push!(confy, y)
+
+        # Sample line segment
+        x, y = point_by_angle([x, y], theta, path.lengths[2])       
+        push!(confx, x)
+        push!(confy, y)
+
+        # Sample third segment
+        s3_start = path.lengths[1] + path.lengths[2]
+        s3_end = sum(path.lengths)
+        for l in s3_start:resolution:s3_end
+            x, y, _ = get_configuration(path, l)
+            push!(confx, x)
+            push!(confy, y)
+        end
+
+        # Add last point of third arch
+        x, y, theta = get_configuration(path, s3_end)
+        push!(confx, x)
+        push!(confy, y)
+
         return confx, confy
     end
-    if Integer(path.type) == Integer(LSL)
-        ang1 = path.origin[3]-pi/2
-        ang2 = ang1 + path.lengths[1]/path.r[1]
-        confx, confy = sample_arc(path.origin, ang1, ang2, path.r[1], resolution, -1)
-        A = [confx[end], confy[end]]
-        B = point_by_angle(A, (ang2+pi/2), path.lengths[2])
-        push!(confx, B[1])
-        push!(confy, B[2])
-        ang3 = ang2 + path.lengths[3]/path.r[3]
-        confx2, confy2 = sample_arc(B, ang2, ang3, path.r[3], resolution, -1)
-        append!(confx, confx2)
-        append!(confy, confy2)
-        return confx, confy
-    end
-    if Integer(path.type) == Integer(LSR)
-        ang1 = path.origin[3]-pi/2
-        ang2 = ang1 + path.lengths[1]/path.r[1]
-        confx, confy = sample_arc(path.origin, ang1, ang2, path.r[1], resolution, -1)
-        A = [confx[end], confy[end]]
-        B = point_by_angle(A, ang2+(pi/2), path.lengths[2])
-        push!(confx, B[1])
-        push!(confy, B[2])
-        ang3 = ang2 - pi - path.lengths[3]/path.r[3]
-        confx2, confy2 = sample_arc(B, mod2pi(ang2+pi), ang3, path.r[3], resolution, 1)
-        append!(confx, confx2)
-        append!(confy, confy2)
-        return confx, confy
-    end
-    if Integer(path.type) == Integer(RSL)
-        ang1 = path.origin[3]+pi/2
-        ang2 = ang1 - path.lengths[1]/path.r[1]
-        confx, confy = sample_arc(path.origin, ang1, ang2, path.r[1], resolution, 1)
-        A = [confx[end], confy[end]]
-        B = point_by_angle(A, ang2-(pi/2), path.lengths[2])
-        push!(confx, B[1])
-        push!(confy, B[2])
-        ang3 = (ang2 + pi) + path.lengths[3]/path.r[3]
-        confx2, confy2 = sample_arc(B, mod2pi(ang2+pi), ang3, path.r[3], resolution, -1)
-        append!(confx, confx2)
-        append!(confy, confy2)
-        return confx, confy
-    end
-    return [], []
 end
 
 
