@@ -139,9 +139,10 @@ Caculation using plane turn
 # Return
 - `v::Float64`: Maximum speed for input radius
 """
-function speed_by_radius(radius::Number, vr::Number, vs::Number)
-    return min(sqrt(radius)*vr, vs)
-end
+## this version works only for normalized, delete if unused
+# function speed_by_radius(radius::Number, vr::Number, vs::Number)
+#    return min(sqrt(radius)*vr, vs)
+#end
 
 """
     speed_by_radius(radius::Number)
@@ -742,7 +743,7 @@ end
 
 function speed_profile(path::DubinsPathR2, v_min::Number, v_max::Number, a1::Float64, a2::Float64)
     # a1 = a_max, a2 = -a_min
-    speeds = [speed_by_radius(r, v_min, v_max) for r in path.r]
+    speeds = [speed_by_radius(r) for r in path.r]
     lengths = path.lengths
 
     times::Vector{Float64} = []
