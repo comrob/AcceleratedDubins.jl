@@ -139,9 +139,9 @@ Caculation using plane turn
 # Return
 - `v::Float64`: Maximum speed for input radius
 """
-function speed_by_radius(radius::Number, vr::Number, vs::Number)
+#=function speed_by_radius(radius::Number, vr::Number, vs::Number)
     return min(sqrt(radius)*vr, vs)
-end
+end=#
 
 """
     speed_by_radius(radius::Number)
@@ -742,7 +742,7 @@ end
 
 function speed_profile(path::DubinsPathR2, v_min::Number, v_max::Number, a1::Float64, a2::Float64)
     # a1 = a_max, a2 = -a_min
-    speeds = [speed_by_radius(r, v_min, v_max) for r in path.r]
+    speeds = [speed_by_radius(r) for r in path.r]
     lengths = path.lengths
 
     times::Vector{Float64} = []
@@ -791,7 +791,7 @@ function speed_profile(path::DubinsPathR2, v_min::Number, v_max::Number, a1::Flo
                 return Inf, Inf
             end
 
-            vx = sqrt(det) / (2*xa) # second root is smaller than beggining speed
+            vx = min(v_max, sqrt(det) / (2*xa)) # second root is smaller than beggining speed
             time += (vx - vs) / a1
             push_vals(time, vx)
             time += (vx - vs) / a2
@@ -836,7 +836,7 @@ function speed_profile(path::DubinsPathR2, v_min::Number, v_max::Number, a1::Flo
                 return Inf, Inf
             end
 
-            vx = sqrt(det) / (2*xa) # second root is smaller than previous speed - unnecessary
+            vx = min(v_max, sqrt(det) / (2*xa)) # second root is smaller than previous speed - unnecessary
             if vx < ve
                 return Inf, Inf
             end
@@ -883,7 +883,7 @@ function speed_profile(path::DubinsPathR2, v_min::Number, v_max::Number, a1::Flo
             if det < 0
                 return Inf, Inf
             end
-            vx = sqrt(det) / (2*xa) # second root is smaller than previous speed - unnecessary
+            vx = min(v_max, sqrt(det) / (2*xa)) # second root is smaller than previous speed - unnecessary
             if vx < ve
                 return Inf, Inf
             end
