@@ -792,7 +792,7 @@ function speed_profile(path::DubinsPathR2, v_min::Number, v_max::Number, a1::Flo
                 return Inf, Inf
             end
 
-            vx = sqrt(det) / (2*xa) # second root is smaller than beggining speed
+            vx = min(v_max, sqrt(det) / (2*xa)) # second root is smaller than beggining speed
             time += (vx - vs) / a1
             push_vals(time, vx)
             time += (vx - vs) / a2
@@ -837,7 +837,7 @@ function speed_profile(path::DubinsPathR2, v_min::Number, v_max::Number, a1::Flo
                 return Inf, Inf
             end
 
-            vx = sqrt(det) / (2*xa) # second root is smaller than previous speed - unnecessary
+            vx = min(v_max, sqrt(det) / (2*xa)) # second root is smaller than previous speed - unnecessary
             if vx < ve
                 return Inf, Inf
             end
@@ -884,7 +884,7 @@ function speed_profile(path::DubinsPathR2, v_min::Number, v_max::Number, a1::Flo
             if det < 0
                 return Inf, Inf
             end
-            vx = sqrt(det) / (2*xa) # second root is smaller than previous speed - unnecessary
+            vx = min(v_max, sqrt(det) / (2*xa)) # second root is smaller than previous speed - unnecessary
             if vx < ve
                 return Inf, Inf
             end
