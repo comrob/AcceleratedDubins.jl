@@ -139,9 +139,10 @@ Caculation using plane turn
 # Return
 - `v::Float64`: Maximum speed for input radius
 """
-#=function speed_by_radius(radius::Number, vr::Number, vs::Number)
-    return min(sqrt(radius)*vr, vs)
-end=#
+## this version works only for normalized, delete if unused
+# function speed_by_radius(radius::Number, vr::Number, vs::Number)
+#    return min(sqrt(radius)*vr, vs)
+#end
 
 """
     speed_by_radius(radius::Number)
