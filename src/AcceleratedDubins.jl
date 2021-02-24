@@ -743,7 +743,7 @@ end
 
 function speed_profile(path::DubinsPathR2, v_min::Number, v_max::Number, a1::Float64, a2::Float64)
     # a1 = a_max, a2 = -a_min
-    speeds = [speed_by_radius(r) for r in path.r]
+    speeds = [min(v_max, speed_by_radius(r)) for r in path.r]
     lengths = path.lengths
 
     times::Vector{Float64} = []
